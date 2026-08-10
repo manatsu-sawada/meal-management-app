@@ -33,6 +33,7 @@ export default function MealFormModal() {
         };
     }, [isOpen])
 
+    // Procedure when sending a form 
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -52,7 +53,7 @@ export default function MealFormModal() {
     return (
         <>
             {/* OPEN button */}
-            <button type="button" onClick={() => setIsOpen(true)} className="rounded-lg bg-blue-600 px-5 py-2.5 font-medium text-white transition hover:bg-blue-700">
+            <button type="button" onClick={() => setIsOpen(true)} className="rounded-lg bg-blue-600 px-5 py-2.5 mb-2 font-medium text-white transition hover:bg-blue-700">
                 食事を追加
             </button>
 
