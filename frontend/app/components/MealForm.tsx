@@ -57,13 +57,7 @@ export default function MealFormModal() {
             </button>
 
             {isOpen && (
-                <div role="dialog" aria-modal="true" aria-labelledby="meal-modal-title" onMouseDown={(event) => {
-                    // close when clicking outside modal
-                    if (event.target === event.currentTarget) {
-                        setIsOpen(false);
-                    }
-                }}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                <div role="dialog" aria-modal="true" aria-labelledby="meal-modal-title" className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
                     <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 text-slate-900 shadow-2xl">
                         {/* close button */}
                         <button type="button" onClick={() => setIsOpen(false)} aria-label="閉じる" className="absolute right-4 top-4 text-2xl text-gray-400 hover:text-gray-700">×</button>
@@ -75,18 +69,15 @@ export default function MealFormModal() {
                         <form onSubmit={handleSubmit} className="space-y-7">
                             {/* meal */}
                             <div className="relative">
-                                <input type="text" id="name" name="name" required maxLength={100} placeholder=" " autoFocus className="peer block w-full border-0 border-b-2 border-grey-900 outline-none focus:border-blue-600 focus:ring-0" />
-
-                                <label htmlFor="name" className="absolute left-0 top-4 origin-left-translate-y-4 scale-75 text-gray-500 transition-all duration-200 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-blue-600">食事内容</label>
+                                <label htmlFor="name">食事内容</label>
+                                <input type="text" id="name" name="name" required maxLength={100} placeholder=" " autoFocus className="peer block w-full border-0 border-b-2 border-gray-400 outline-none focus:border-blue-600 focus:ring-0" />
                             </div>
 
                             {/* calories */}
                             <div className="relative">
-                                <input type="number" id="calories" name="calories" required min={0} placeholder=" " className="peer block w-full border-0 border-b-2 border-grey-900 outline-none focus:border-blue-600 focus:ring-0" />
-
-                                <label htmlFor="calories" className="absolute left-0 top-4 origin-left-translate-y-4 scale-75 text-gray-500 transition-all duration-200 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-blue-600">カロリー</label>
-
-                                <span className="absolute right-0 top-5 text-sm text-gray-400">kcal</span>
+                                <label htmlFor="calories">カロリー</label>
+                                <input type="number" id="calories" name="calories" required min={0} placeholder=" " className="peer block w-full border-0 border-b-2 border-gray-400 outline-none focus:border-blue-600 focus:ring-0" />
+                                <span className="absolute right-0 text-sm text-gray-400">kcal</span>
                             </div>
 
                             {/* meal type */}
@@ -111,15 +102,14 @@ export default function MealFormModal() {
 
                             {/* memo */}
                             <div className="relative">
+                                <label htmlFor="memo">メモ</label>
                                 <textarea name="memo" id="memo" rows={3} maxLength={500} placeholder=" " className="peer block w-full resize-none border-0 border-b-2 border-gray-300 bg-transparent px-0 pb-2 pt-5 text-gray-900 outline-none focus:border-blue-600 focus:ring-0" />
-
-                                <label htmlFor="memo" className="absolute left-0 top-4 origin-left-translate-y-4 scale-75 text-gray-500 transition-all duration-200 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:text-blue-600">メモ</label>
                             </div>
 
                             <div className="flex justify-end gap-3 pt-2">
-                                <button type="button" onClick={() => setIsOpen(false)} className="rounded-lg border border-gray-100" hover:bg-gray-100>
+                                <button type="button" onClick={() => setIsOpen(false)} className="rounded-lg border px-5 py-2 border-gray-100 hover:bg-gray-100">
                                     キャンセル
-                                </button>      
+                                </button>
                                 <button type="submit" className="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white hover:bg-blue-700">
                                     登録
                                 </button>
@@ -132,26 +122,4 @@ export default function MealFormModal() {
         </>
     )
 
-}
-
-
-
-
-
-
-
-
-
-
-export default function Page() {
-    return (
-        <form className="grid gap-4" onSubmit={handleSubmit}>
-            {/* 食事内容 */}
-            <label htmlFor="name" className="block font-medium text-gray-700">
-                食事内容
-            </label>
-            <input type="text" name="name" id="name" required maxLength={100} placeholder="例：オムライス" className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-black" />
-            <button type="submit" className='rounded bg-blue-600 px-4 py-2 text-white'>Submit</button>
-        </form>
-    );
 }
