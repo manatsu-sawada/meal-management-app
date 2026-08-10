@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MealType {
+  BREAKFAST
+  LUNCH
+  DINNER
+  SNACK
+}
+
+model Meal {
+  id        Int      @id @default(autoincrement())
+  name      String
+  calories  Int
+  mealType  MealType
+  eatenAt   DateTime
+  memo      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eatenAt])
+}
+
+model Weight {
+  id         Int      @id @default(autoincrement())
+  weight     Decimal  @db.Decimal(4, 1)
+  measuredAt DateTime @db.Date
+  memo       String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([measuredAt])
+}
