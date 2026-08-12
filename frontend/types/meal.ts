@@ -5,8 +5,8 @@ export type Meal = {
     mealType: "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK";
     eatenAt: string;
     memo: string | null;
-    createAt: string;
-    updateAt: string;
+    createdAt: string;
+    updatedAt: string;
 };
 
 export type Weight = {
@@ -21,7 +21,7 @@ export type Weight = {
 export type MealForm = {
     name: string;
     calories: string;
-    mealType: string;
+    mealType: "BREAKFAST" | "LUNCH" | "DINNER" | "SNACK";
     eatenAt: string;
     memo: string;
 };

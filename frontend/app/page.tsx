@@ -1,7 +1,7 @@
 "use client";
 
 // import {} from "react"; React から呼ばないとダメな機能
-import MealFormModal from "./components/MealForm";
+import {MealFormModal} from "./components/MealForm";
 import MealList from "./components/MealList";
 
 const API_URL = 

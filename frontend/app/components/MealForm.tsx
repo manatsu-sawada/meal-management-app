@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type SubmitEvent } from "react";
-import { MealForm } from "@/types/meal";
+import { Meal, MealForm } from "@/types/meal";
 
 const API_URL =
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
@@ -9,12 +9,12 @@ const API_URL =
 const initialForm: MealForm = {
     name: "",
     calories: "",
-    mealType: "朝食",
+    mealType: "BREAKFAST",
     eatenAt: "",
     memo: "",
 };
 
-export default function MealFormModal() {
+export function MealFormModal() {
     const [isOpen, setIsOpen] = useState(false);
 
     // Monitor Esc key
