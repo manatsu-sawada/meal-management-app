@@ -6,18 +6,16 @@ import type { Meal } from "@/types/meal";
 
 // example data 
 const meals: Meal[] = [
-            {
-                id: 1,
-                name: "鶏胸肉とご飯",
-                calories: 450,
-                mealType: "LUNCH",
-                eatenAt: "2026-08-10T12:00",
-                memo: "健康的でいいね。",
-                createdAt: "2026-08-10T12:00",
-                updatedAt: "2026-08-10T12:00",
-            },
-        ];
-    [
+    {
+        id: 1,
+        name: "鶏胸肉とご飯",
+        calories: 450,
+        mealType: "LUNCH",
+        eatenAt: "2026-08-10T12:00",
+        memo: "健康的でいいね。",
+        createdAt: "2026-08-10T12:00",
+        updatedAt: "2026-08-10T12:00",
+    },
     {
         id: 2,
         name: "ヨーグルト",
@@ -29,6 +27,7 @@ const meals: Meal[] = [
         updatedAt: "2026-08-10T12:00",
     },
 ];
+
 
 export default function MealList() {
     // when pushing Edit Button - setEditingMeal(meal) can change default value(null) to meal
@@ -56,12 +55,12 @@ export default function MealList() {
 
                     <div className="mt-3 flex gap-2">
                         {/* UPDATE */}
-                        <button type="button" onClick={() => setEditingMeal(meal)}>
+                        <button type="button" onClick={() => setEditingMeal(meal)} className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
                             編集
                         </button>
 
                         {/* DELETE */}
-                        <button type="button">
+                        <button type="button" className="bg-white hover:bg-red-300 text-red-800 font-semibold py-2 px-4 border border-red-800 rounded shadow">
                             削除
                         </button>
                     </div>

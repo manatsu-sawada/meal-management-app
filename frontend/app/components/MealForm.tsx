@@ -108,7 +108,7 @@ export function MealFormModal() {
                             </div>
 
                             <div className="flex justify-end gap-3 pt-2">
-                                <button type="button" onClick={() => setIsOpen(false)} className="rounded-lg border px-5 py-2 border-gray-100 hover:bg-gray-100">
+                                <button type="button" onClick={() => setIsOpen(false)} className="rounded-lg border px-5 py-2 border-gray-300 hover:bg-gray-100">
                                     キャンセル
                                 </button>
                                 <button type="submit" className="rounded-lg bg-blue-600 px-5 py-2 font-medium text-white hover:bg-blue-700">
