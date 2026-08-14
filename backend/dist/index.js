@@ -29,29 +29,8 @@ const createMealSchema = z.object({
         .max(500, "メモは500文字以内です")
         .optional(),
 });
-const updateMealSchema = z.object({
-    name: z
-        .string()
-        .trim()
-        .min(1, "食事内容を入力してください")
-        .max(100, "食事内容は100文字以内です").optional(),
-    calories: z.coerce
-        .number()
-        .int("カロリーは整数で入力してください")
-        .min(0, "カロリーは0以上で入力してください").optional(),
-    mealType: z.enum([
-        "BREAKFAST",
-        "LUNCH",
-        "DINNER",
-        "SNACK",
-    ]).optional(),
-    eatenAt: z.coerce.date().optional(),
-    memo: z
-        .string()
-        .trim()
-        .max(500, "メモは500文字以内です")
-        .optional(),
-});
+// .partial() - add optional to all data
+const updateMealSchema = createMealSchema.partial();
 app.use("*", cors({
     origin: "http://localhost:3000",
     allowMethods: [
@@ -133,13 +112,44 @@ app.post("/api/meals", sValidator("json", createMealSchema), async (c) => {
     return c.json(meal, 201);
 });
 // update
-app.put("/api/meals/:id", sValidator("json", updateMealSchema), async (c) => {
+app.patch("/api/meals/:id", sValidator("json", updateMealSchema), async (c) => {
+    const id = Number(c.req.param("id"));
+    if (!Number.isInteger(id)) {
+        return c.json({ error: "IDが正しくありません。" }, 400);
+    }
     const data = c.req.valid("json");
-    const meal = meals.find(a => a.id === id);
-    if (meal === null) {
+    const existingMeal = await prisma.meal.findUnique({
+        where: { id },
+    });
+    if (!existingMeal) {
         return c.json({ error: "食事内容が見つかりません。" }, 404);
     }
-    return c.json(meal, 201);
+    // update data
+    const updateMeal = await prisma.meal.update({
+        where: { id },
+        data,
+    });
+    return c.json(updateMeal, 200);
+});
+// delete
+app.delete("/api/meals/:id", async (c) => {
+    const id = Number(c.req.param("id"));
+    // check id
+    if (!Number.isInteger(id)) {
+        return c.json({ error: "IDが正しくありません。" }, 400);
+    }
+    // meal info check
+    const meal = await prisma.meal.findUnique({
+        where: { id },
+    });
+    if (!meal) {
+        return c.json({ error: "食事記録が見つかりません。" }, 404);
+    }
+    // delete data
+    await prisma.meal.delete({
+        where: { id },
+    });
+    return c.body(null, 204);
 });
 serve({
     fetch: app.fetch,
