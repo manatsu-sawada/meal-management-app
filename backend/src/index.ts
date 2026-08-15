@@ -56,79 +56,10 @@ app.get("/", (c) => {
   return c.json({ message: "Meal Management API" });
 })
 
-// meals
-app.get("/api/meals", async (c) => {
-  const meals = await prisma.meal.findMany({
-    orderBy: {
-      eatenAt: "desc",
-    },
-  });
-
-  return c.json(meals);
-});
-
-// calories
-app.get("/api/meals/daily-summary", async (c) => {
-  const date = c.req.query("date");
-
-  if (!date) {
-    return c.json({ message: "日付を指定してください。" }, 400);
-  }
-
-  // create defined duration
-  const start = new Date(`${date}T00:00:00`);
-  const end = new Date(`${date}T23:59:59.999`);
-
-  // check the date 
-  if (Number.isNaN(start.getTime())) {
-    return c.json({ message: "正しい日付を指定してください " }, 400);
-  }
-
-  // return sum
-  const result = await prisma.meal.aggregate({
-    where: {
-      eatenAt: {
-        // gte - grater than or equal
-        gte: start,
-        // lte - less than or equal
-        lte: end,
-      },
-    },
-    // calculate 
-    _sum: {
-      calories: true,
-    },
-  });
-
-  return c.json({
-    date,
-    totalCalories: result._sum.calories ?? 0,
-  });
-});
-
-// details
-app.get("/api/meals/:id", async (c) => {
-  const id = Number(c.req.param("id"));
-
-  if (!Number.isInteger(id)) {
-    return c.json({ message: "IDが正しくありません。" }, 400);
-  }
-
-  const meal = await prisma.meal.findUnique({
-    where: { id },
-  });
-
-  if (!meal) {
-    return c.json({ message: "食事記録が見つかりません。" }, 404);
-  }
-
-  return c.json(meal);
-});
-
-// register
+// Create
 app.post("/api/meals", sValidator("json", createMealSchema),
-  async (c) => {
-    const data = c.req.valid("json");
+async (c) => {
+  const data = c.req.valid("json");
 
     const meal = await prisma.meal.create({
       data: {
@@ -143,7 +74,18 @@ app.post("/api/meals", sValidator("json", createMealSchema),
     return c.json(meal, 201)
   })
 
-// update
+// Read
+app.get("/api/meals", async (c) => {
+  const meals = await prisma.meal.findMany({
+    orderBy: {
+      eatenAt: "desc",
+    },
+  });
+
+  return c.json(meals);
+});
+
+// Update
 app.patch("/api/meals/:id", sValidator("json", updateMealSchema),
   async (c) => {
     const id = Number(c.req.param("id"));
@@ -156,7 +98,7 @@ app.patch("/api/meals/:id", sValidator("json", updateMealSchema),
     const existingMeal = await prisma.meal.findUnique({
       where: { id },
     });
-
+    
     if (!existingMeal) {
       return c.json({ error: "食事内容が見つかりません。" }, 404,);
     }
@@ -169,8 +111,8 @@ app.patch("/api/meals/:id", sValidator("json", updateMealSchema),
 
     return c.json(updateMeal, 200);
   })
-
-// delete
+  
+  // Delete
 app.delete("/api/meals/:id",
   async (c) => {
     const id = Number(c.req.param("id"));
@@ -184,7 +126,7 @@ app.delete("/api/meals/:id",
     const meal = await prisma.meal.findUnique({
       where: { id },
     });
-
+    
     if (!meal) {
       return c.json(
         { error: "食事記録が見つかりません。" },
@@ -199,12 +141,69 @@ app.delete("/api/meals/:id",
 
     return c.body(null, 204);
   })
-
-
-
-
-serve(
-  {
+  
+  
+  // total calories
+  app.get("/api/meals/daily-summary", async (c) => {
+    const date = c.req.query("date");
+  
+    if (!date) {
+      return c.json({ message: "日付を指定してください。" }, 400);
+    }
+  
+    // create defined duration
+    const start = new Date(`${date}T00:00:00`);
+    const end = new Date(`${date}T23:59:59.999`);
+  
+    // check the date 
+    if (Number.isNaN(start.getTime())) {
+      return c.json({ message: "正しい日付を指定してください " }, 400);
+    }
+  
+    // return sum
+    const result = await prisma.meal.aggregate({
+      where: {
+        eatenAt: {
+          // gte - grater than or equal
+          gte: start,
+          // lte - less than or equal
+          lte: end,
+        },
+      },
+      // calculate 
+      _sum: {
+        calories: true,
+      },
+    });
+  
+    return c.json({
+      date,
+      totalCalories: result._sum.calories ?? 0,
+    });
+  });
+  
+  // details
+  app.get("/api/meals/:id", async (c) => {
+    const id = Number(c.req.param("id"));
+  
+    if (!Number.isInteger(id)) {
+      return c.json({ message: "IDが正しくありません。" }, 400);
+    }
+  
+    const meal = await prisma.meal.findUnique({
+      where: { id },
+    });
+  
+    if (!meal) {
+      return c.json({ message: "食事記録が見つかりません。" }, 404);
+    }
+  
+    return c.json(meal);
+  });
+  
+  
+  serve(
+    {
     fetch: app.fetch,
     port: 8787,
   },
