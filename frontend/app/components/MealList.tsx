@@ -1,37 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EditMealModal } from "./EditMealModal";
 import type { Meal } from "@/types/meal";
+import { getMeal } from "@/lib/mealApi";
 
 // example data 
-const meals: Meal[] = [
-    {
-        id: 1,
-        name: "鶏胸肉とご飯",
-        calories: 450,
-        mealType: "LUNCH",
-        eatenAt: "2026-08-10T12:00",
-        memo: "健康的でいいね。",
-        createdAt: "2026-08-10T12:00",
-        updatedAt: "2026-08-10T12:00",
-    },
-    {
-        id: 2,
-        name: "ヨーグルト",
-        calories: 120,
-        mealType: "SNACK",
-        eatenAt: "2026-08-10T15:00",
-        memo: "",
-        createdAt: "2026-08-10T12:00",
-        updatedAt: "2026-08-10T12:00",
-    },
-];
+// const meals: Meal[] = [
+//     {
+//         id: 1,
+//         name: "鶏胸肉とご飯",
+//         calories: 450,
+//         mealType: "LUNCH",
+//         eatenAt: "2026-08-10T12:00",
+//         memo: "健康的でいいね。",
+//         createdAt: "2026-08-10T12:00",
+//         updatedAt: "2026-08-10T12:00",
+//     },
+//     {
+//         id: 2,
+//         name: "ヨーグルト",
+//         calories: 120,
+//         mealType: "SNACK",
+//         eatenAt: "2026-08-10T15:00",
+//         memo: "",
+//         createdAt: "2026-08-10T12:00",
+//         updatedAt: "2026-08-10T12:00",
+//     },
+// ];
 
 
 export default function MealList() {
-    // when pushing Edit Button - setEditingMeal(meal) can change default value(null) to meal
+    // Read
+    const [meals, setMeals] = useState<Meal[]>([]);
+    // Update
     const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
+
+    useEffect(()=>{
+        async function fetchMeals() {
+            const data = await getMeal();
+            setMeals(data);
+        }
+
+        fetchMeals();
+    }, []);
 
     return (
         <div className="space-y-3">

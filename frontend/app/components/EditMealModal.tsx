@@ -1,32 +1,51 @@
 "use client";
 
 import type { SubmitEvent } from "react";
-import type { Meal } from "@/types/meal";
+import type { Meal, MealType } from "@/types/meal";
+import { updateMeal } from "@/lib/mealApi";
 
 type EditMealProps = {
     meal: Meal;
     onClose: () => void;
 };
 
+// ローカル時間へ変更
+function toDateTimeLocal(value: string) {
+    const date = new Date(value);
+    const offset = date.getTimezoneOffset();
+
+    return new Date(
+        date.getTime() - offset * 60_000,
+    )
+        .toISOString()
+        .slice(0, 16);
+}
+
 export function EditMealModal({
     meal,
     onClose,
 }: EditMealProps) {
     // Procedure when sending a form 
-    function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
 
-        console.log({
-            name: formData.get("name"),
-            calories: formData.get("calories"),
-            mealType: formData.get("mealType"),
-            eatenAt: formData.get("eatenAt"),
-            memo: formData.get("memo"),
-        });
+        const newData = {
+            name: String(formData.get("name")),
+            calories: Number(formData.get("calories")),
+            mealType: formData.get("mealType") as MealType,
+            eatenAt: new Date(String(formData.get("eatenAt")),).toISOString(),
+            memo: String(formData.get("memo") ?? ""),
+        };
 
-        // APIへの保存処理はあとでここに追加
-        onClose();
+        // APIへの保存処理
+        try {
+            await updateMeal(meal.id, newData);
+            onClose();
+            window.location.reload();
+        } catch (err){
+            console.error(err);
+        }
     }
 
     return (
@@ -62,7 +81,7 @@ export function EditMealModal({
 
                     <div className="relative">
                         <label htmlFor="edit-eaten-at">日時</label>
-                        <input id="edit-eaten-at" name="eatenAt" type="datetime-local" defaultValue={meal.eatenAt} required className="block w-full border-0 border-b-2 border-gray-300 bg-transparent px-0 pb-2 pt-5 text-gray-900 outline-none focus:border-blue-600 focus:ring-0" />
+                        <input id="edit-eaten-at" name="eatenAt" type="datetime-local" defaultValue={toDateTimeLocal(meal.eatenAt)} required className="block w-full border-0 border-b-2 border-gray-300 bg-transparent px-0 pb-2 pt-5 text-gray-900 outline-none focus:border-blue-600 focus:ring-0" />
                     </div>
 
                     <div className="relative">

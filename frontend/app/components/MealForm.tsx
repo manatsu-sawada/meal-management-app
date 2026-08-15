@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, type SubmitEvent } from "react";
-import { Meal, MealForm } from "@/types/meal";
+import { Meal, MealForm, MealType } from "@/types/meal";
+import { createMeal } from "@/lib/mealApi";
 
 const API_URL =
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
@@ -34,20 +35,27 @@ export function MealFormModal() {
     }, [isOpen])
 
     // Procedure when sending a form 
-    function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
 
-        console.log({
-            name: formData.get("name"),
-            calories: formData.get("calories"),
-            mealType: formData.get("mealType"),
-            eatenAt: formData.get("eatenAt"),
-            memo: formData.get("memo"),
-        });
+        const mealData = {
+            name: String(formData.get("name")),
+            calories: Number(formData.get("calories")),
+            mealType: formData.get("mealType") as MealType,
+            eatenAt: new Date(String(formData.get("eatenAt")),).toISOString(),
+            memo: String(formData.get("memo") ?? ""),
+        };
 
-        // APIへの保存処理はあとでここに追加
-        setIsOpen(false);
+        // API保存処理        
+        try {
+            await createMeal(mealData);
+            setIsOpen(false);
+            
+            window.location.reload();
+        } catch (err){
+            console.error(err);
+        }
     }
 
     return (
@@ -104,7 +112,7 @@ export function MealFormModal() {
                             {/* memo */}
                             <div className="relative">
                                 <label htmlFor="memo">メモ</label>
-                                <textarea name="memo" id="memo" rows={3} maxLength={500} placeholder=" " className="peer block w-full resize-none border-0 border-b-2 border-gray-300 bg-transparent px-0 pb-2 pt-5 text-gray-900 outline-none focus:border-blue-600 focus:ring-0" />
+                                <textarea name="memo" id="memo" rows={3} maxLength={500} placeholder=" " className="peer block w-full resize-none border-0 border-b-2 border-gray-300 bg-transparent px-0 pb-2 pt-1 text-gray-900 outline-none focus:border-blue-600 focus:ring-0" />
                             </div>
 
                             <div className="flex justify-end gap-3 pt-2">
