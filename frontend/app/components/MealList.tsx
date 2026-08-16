@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { EditMealModal } from "./EditMealModal";
 import type { Meal } from "@/types/meal";
-import { getMeal } from "@/lib/mealApi";
+import { deleteMeal, getMeal } from "@/lib/mealApi";
 
 // example data 
 // const meals: Meal[] = [
@@ -33,17 +33,29 @@ import { getMeal } from "@/lib/mealApi";
 export default function MealList() {
     // Read
     const [meals, setMeals] = useState<Meal[]>([]);
-    // Update
-    const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
-
     useEffect(()=>{
         async function fetchMeals() {
             const data = await getMeal();
             setMeals(data);
         }
-
         fetchMeals();
     }, []);
+
+    // Update (OPEN THE EDIT MODAL)
+    const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
+
+    // Delete (deleteMeal() + refresh)
+    async function deletingMeal(id: number) {
+        try {
+            await deleteMeal(id);
+            setMeals((prev) =>
+                prev.filter((item) => item.id !== id)
+            );
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
 
     return (
         <div className="space-y-3">
@@ -72,7 +84,7 @@ export default function MealList() {
                         </button>
 
                         {/* DELETE */}
-                        <button type="button" className="bg-white hover:bg-red-300 text-red-800 font-semibold py-2 px-4 border border-red-800 rounded shadow">
+                        <button type="button" onClick={() => deletingMeal(meal.id)} className="bg-white hover:bg-red-300 text-red-800 font-semibold py-2 px-4 border border-red-800 rounded shadow">
                             削除
                         </button>
                     </div>
