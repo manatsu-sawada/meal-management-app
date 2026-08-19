@@ -1,62 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { EditMealModal } from "./EditMealModal";
 import type { Meal } from "@/types/meal";
-import { deleteMeal, getMeal } from "@/lib/mealApi";
+import { deleteMeal } from "@/lib/mealApi";
 
-// example data 
-// const meals: Meal[] = [
-//     {
-//         id: 1,
-//         name: "鶏胸肉とご飯",
-//         calories: 450,
-//         mealType: "LUNCH",
-//         eatenAt: "2026-08-10T12:00",
-//         memo: "健康的でいいね。",
-//         createdAt: "2026-08-10T12:00",
-//         updatedAt: "2026-08-10T12:00",
-//     },
-//     {
-//         id: 2,
-//         name: "ヨーグルト",
-//         calories: 120,
-//         mealType: "SNACK",
-//         eatenAt: "2026-08-10T15:00",
-//         memo: "",
-//         createdAt: "2026-08-10T12:00",
-//         updatedAt: "2026-08-10T12:00",
-//     },
-// ];
+type MealListProps = {
+    meals: Meal[];
+    onDeleted: (id: number) => void;
+};
 
-
-export default function MealList() {
-    // Read
-    const [meals, setMeals] = useState<Meal[]>([]);
-    useEffect(()=>{
-        async function fetchMeals() {
-            const data = await getMeal();
-            setMeals(data);
-        }
-        fetchMeals();
-    }, []);
-
+export default function MealList({ meals, onDeleted }: MealListProps) {
     // Update (OPEN THE EDIT MODAL)
     const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
 
     // Delete (deleteMeal() + refresh)
-    async function deletingMeal(id: number) {
-        try {
-            await deleteMeal(id);
-            setMeals((prev) =>
-                prev.filter((item) => item.id !== id)
-            );
-        } catch (err) {
-            console.error(err);
-        }
+    async function handleDeleted(id: number) {
+        await deleteMeal(id);
+        onDeleted(id);
     }
-
-
+    
     return (
         <div className="space-y-3">
             {meals.map((meal) => (
@@ -84,7 +47,7 @@ export default function MealList() {
                         </button>
 
                         {/* DELETE */}
-                        <button type="button" onClick={() => deletingMeal(meal.id)} className="bg-white hover:bg-red-300 text-red-800 font-semibold py-2 px-4 border border-red-800 rounded shadow">
+                        <button type="button" onClick={() => handleDeleted(meal.id)} className="bg-white hover:bg-red-300 text-red-800 font-semibold py-2 px-4 border border-red-800 rounded shadow">
                             削除
                         </button>
                     </div>

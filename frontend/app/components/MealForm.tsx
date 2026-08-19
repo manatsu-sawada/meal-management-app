@@ -7,6 +7,7 @@ import { createMeal } from "@/lib/mealApi";
 const API_URL =
     process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
 
+// フォーム初期値
 const initialForm: MealForm = {
     name: "",
     calories: "",
@@ -15,7 +16,12 @@ const initialForm: MealForm = {
     memo: "",
 };
 
-export function MealFormModal() {
+// Props
+type MealFormProps = {
+    onCreated: (meal:Meal) => void;
+};
+
+export function MealFormModal({onCreated}: MealFormProps) {
     const [isOpen, setIsOpen] = useState(false);
 
     // Monitor Esc key
@@ -49,11 +55,10 @@ export function MealFormModal() {
 
         // API保存処理        
         try {
-            await createMeal(mealData);
-            setIsOpen(false);
-            
-            window.location.reload();
-        } catch (err){
+            const newMeal = await createMeal(mealData);
+            onCreated(newMeal);
+            setIsOpen(false);     
+        } catch (err) {
             console.error(err);
         }
     }
