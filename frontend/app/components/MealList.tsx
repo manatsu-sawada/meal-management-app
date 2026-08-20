@@ -5,12 +5,14 @@ import { EditMealModal } from "./EditMealModal";
 import type { Meal } from "@/types/meal";
 import { deleteMeal } from "@/lib/mealApi";
 
+// Props
 type MealListProps = {
     meals: Meal[];
     onDeleted: (id: number) => void;
+    onUpdated: (meal: Meal) => void;
 };
 
-export default function MealList({ meals, onDeleted }: MealListProps) {
+export default function MealList({ meals, onDeleted, onUpdated }: MealListProps) {
     // Update (OPEN THE EDIT MODAL)
     const [editingMeal, setEditingMeal] = useState<Meal | null>(null);
 
@@ -57,6 +59,7 @@ export default function MealList({ meals, onDeleted }: MealListProps) {
             {editingMeal && (
                 <EditMealModal
                     meal={editingMeal}
+                    onUpdated={onUpdated}
                     onClose={() => setEditingMeal(null)}
                 />
             )}

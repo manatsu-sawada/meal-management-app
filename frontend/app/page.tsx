@@ -33,6 +33,12 @@ export default function Home(){
     setMeals((prev) => [newMeal, ...prev]);
   }
 
+  // Update
+  function handleUpdated(updateMeal: Meal) {
+    setMeals((prev) => prev.map((meal) =>
+       meal.id === updateMeal.id ? updateMeal : meal));
+  }
+
   // Delete
   function handleDeleted(id: number) {
     setMeals((prev) =>
@@ -46,7 +52,7 @@ export default function Home(){
     </h1>
 
     <MealFormModal onCreated={handleCreated} />
-    <MealList meals={meals} onDeleted={handleDeleted} />
+    <MealList meals={meals} onDeleted={handleDeleted} onUpdated={handleUpdated} />
 
   </main>
   );

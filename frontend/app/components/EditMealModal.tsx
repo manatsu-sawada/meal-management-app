@@ -7,6 +7,7 @@ import { updateMeal } from "@/lib/mealApi";
 type EditMealProps = {
     meal: Meal;
     onClose: () => void;
+    onUpdated: (meal: Meal) => void;
 };
 
 // ローカル時間へ変更
@@ -24,6 +25,7 @@ function toDateTimeLocal(value: string) {
 export function EditMealModal({
     meal,
     onClose,
+    onUpdated
 }: EditMealProps) {
     // Procedure when sending a form 
     async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
@@ -40,9 +42,10 @@ export function EditMealModal({
 
         // APIへの保存処理
         try {
-            await updateMeal(meal.id, newData);
+            const updatedMeal = await updateMeal(meal.id, newData);
+            onUpdated(updatedMeal);
             onClose();
-            window.location.reload();
+            // window.location.reload();
         } catch (err){
             console.error(err);
         }
