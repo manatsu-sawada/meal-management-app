@@ -15,7 +15,6 @@ export function TotalCalories({ meals }: CaloriesProps) {
         <p className="text-sm text-gray-500">
             今日の合計カロリー
         </p>
-
         <p className="text-2xl font-bold">
             {totalCalories} kcal
         </p>

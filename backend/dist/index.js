@@ -4,6 +4,7 @@ import { cors } from "hono/cors";
 import { prisma } from "./lib/prisma.js";
 import { sValidator } from "@hono/standard-validator";
 import { z } from "zod";
+import { auth } from "./lib/auth.js";
 const app = new Hono();
 // Validation
 const createMealSchema = z.object({
@@ -37,11 +38,28 @@ app.use("*", cors({
         "GET", "POST", "PATCH", "DELETE", "OPTIONS",
     ],
     allowHeaders: ["Content-Type"],
+    credentials: true,
 }));
+// Better Auth
+app.all("/api/auth/*", (c) => auth.handler(c.req.raw));
 app.get("/", (c) => {
     return c.json({ message: "Meal Management API" });
 });
-// meals
+// Create
+app.post("/api/meals", sValidator("json", createMealSchema), async (c) => {
+    const data = c.req.valid("json");
+    const meal = await prisma.meal.create({
+        data: {
+            name: data.name,
+            calories: data.calories,
+            mealType: data.mealType,
+            eatenAt: data.eatenAt,
+            memo: data.memo || null,
+        },
+    });
+    return c.json(meal, 201);
+});
+// Read
 app.get("/api/meals", async (c) => {
     const meals = await prisma.meal.findMany({
         orderBy: {
@@ -50,7 +68,47 @@ app.get("/api/meals", async (c) => {
     });
     return c.json(meals);
 });
-// calories
+// Update
+app.patch("/api/meals/:id", sValidator("json", updateMealSchema), async (c) => {
+    const id = Number(c.req.param("id"));
+    if (!Number.isInteger(id)) {
+        return c.json({ error: "IDが正しくありません。" }, 400);
+    }
+    const data = c.req.valid("json");
+    const existingMeal = await prisma.meal.findUnique({
+        where: { id },
+    });
+    if (!existingMeal) {
+        return c.json({ error: "食事内容が見つかりません。" }, 404);
+    }
+    // update data
+    const updateMeal = await prisma.meal.update({
+        where: { id },
+        data,
+    });
+    return c.json(updateMeal, 200);
+});
+// Delete
+app.delete("/api/meals/:id", async (c) => {
+    const id = Number(c.req.param("id"));
+    // check id
+    if (!Number.isInteger(id)) {
+        return c.json({ error: "IDが正しくありません。" }, 400);
+    }
+    // meal info check
+    const meal = await prisma.meal.findUnique({
+        where: { id },
+    });
+    if (!meal) {
+        return c.json({ error: "食事記録が見つかりません。" }, 404);
+    }
+    // delete data
+    await prisma.meal.delete({
+        where: { id },
+    });
+    return c.body(null, 204);
+});
+// total calories
 app.get("/api/meals/daily-summary", async (c) => {
     const date = c.req.query("date");
     if (!date) {
@@ -96,60 +154,6 @@ app.get("/api/meals/:id", async (c) => {
         return c.json({ message: "食事記録が見つかりません。" }, 404);
     }
     return c.json(meal);
-});
-// register
-app.post("/api/meals", sValidator("json", createMealSchema), async (c) => {
-    const data = c.req.valid("json");
-    const meal = await prisma.meal.create({
-        data: {
-            name: data.name,
-            calories: data.calories,
-            mealType: data.mealType,
-            eatenAt: data.eatenAt,
-            memo: data.memo || null,
-        },
-    });
-    return c.json(meal, 201);
-});
-// update
-app.patch("/api/meals/:id", sValidator("json", updateMealSchema), async (c) => {
-    const id = Number(c.req.param("id"));
-    if (!Number.isInteger(id)) {
-        return c.json({ error: "IDが正しくありません。" }, 400);
-    }
-    const data = c.req.valid("json");
-    const existingMeal = await prisma.meal.findUnique({
-        where: { id },
-    });
-    if (!existingMeal) {
-        return c.json({ error: "食事内容が見つかりません。" }, 404);
-    }
-    // update data
-    const updateMeal = await prisma.meal.update({
-        where: { id },
-        data,
-    });
-    return c.json(updateMeal, 200);
-});
-// delete
-app.delete("/api/meals/:id", async (c) => {
-    const id = Number(c.req.param("id"));
-    // check id
-    if (!Number.isInteger(id)) {
-        return c.json({ error: "IDが正しくありません。" }, 400);
-    }
-    // meal info check
-    const meal = await prisma.meal.findUnique({
-        where: { id },
-    });
-    if (!meal) {
-        return c.json({ error: "食事記録が見つかりません。" }, 404);
-    }
-    // delete data
-    await prisma.meal.delete({
-        where: { id },
-    });
-    return c.body(null, 204);
 });
 serve({
     fetch: app.fetch,

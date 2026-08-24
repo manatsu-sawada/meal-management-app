@@ -4,6 +4,7 @@ import { cors } from "hono/cors";
 import { prisma } from "./lib/prisma.js";
 import { sValidator } from "@hono/standard-validator";
 import { z } from "zod";
+import { auth } from "./lib/auth.js";
 
 const app = new Hono();
 
@@ -49,8 +50,15 @@ app.use(
       "GET", "POST", "PATCH", "DELETE", "OPTIONS",
     ],
     allowHeaders: ["Content-Type"],
+    credentials: true,
   }),
 );
+
+// Better Auth
+app.all(
+  "/api/auth/*",
+  (c) => auth.handler(c.req.raw),
+)
 
 app.get("/", (c) => {
   return c.json({ message: "Meal Management API" });
