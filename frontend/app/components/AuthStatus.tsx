@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 export function AuthStatus() {
     const router = useRouter();
+    // useSession() - ログイン状態の確認
     const {
         data: session,
         isPending,
@@ -27,7 +28,7 @@ export function AuthStatus() {
             </button>
         );
     }
-
+    
     async function handleSignOut() {
         await authClient.signOut();
         router.push("/sign-in");

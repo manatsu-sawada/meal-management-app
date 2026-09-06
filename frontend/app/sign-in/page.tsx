@@ -88,6 +88,7 @@ export default function SignInPage() {
                             </p>
                         )}
                     </form>
+                    <a href="../sign-up" className="block w-full text-blue-500 text-xs text-right underline mt-2 hover:text-blue-300">You don't have an account?</a>
                 </div>
             </div>
         </>

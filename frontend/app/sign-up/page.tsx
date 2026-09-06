@@ -105,6 +105,7 @@ export default function SignUpPage() {
                             </p>
                         )}
                     </form>
+                    <a href="../sign-in" className="block w-full text-blue-500 text-xs text-right underline mt-2 hover:text-blue-300">Do you have an account?</a>
                 </div>
             </div>
         </>
